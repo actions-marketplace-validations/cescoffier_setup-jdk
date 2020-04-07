@@ -5,7 +5,10 @@ This action sets up a Java development environment with the OpenJDK distribution
 - Downloading and caching a version of the OpenJDK by version and adding to `PATH`. Downloads from [AdoptOpenJDK](https://adoptopenjdk.net/).
 - Registering problem matchers for error output.
 
-The action is based on [actions/setup-java](https://github.com/actions/setup-java) and is using the [AdoptOpenJDK API](https://api.adoptopenjdk.net/) for fetching the JDK binaries.
+The action is based on [actions/setup-java](https://github.com/actions/setup-java) and is using the [AdoptOpenJDK API](https://api.adoptopenjdk.net/) for fetching the JDK binaries. It's also a fork from 
+https://github.com/joschi/setup-jdk, trying to improve the reliability.
+
+
 
 # Usage
 
@@ -15,9 +18,9 @@ Basic:
 ```yaml
 steps:
 - uses: actions/checkout@latest
-- uses: joschi/setup-jdk@v1
+  uses: cescoffier/setup-jdk@v1.1.2
   with:
-    java-version: '11' // The OpenJDK version to make available on the path
+    java_version: '11' // The OpenJDK version to make available on the path
     architecture: 'x64' // defaults to 'x64'
 - run: java -cp java HelloWorldApp
 ```
@@ -34,9 +37,9 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Setup java
-        uses: joschi/setup-jdk@v1
+        uses: cescoffier/setup-jdk@v1.1.2
         with:
-          java-version: ${{ matrix.java }}
+          java_version: ${{ matrix.java }}
           architecture: x64
       - run: java -cp java HelloWorldApp
 ```

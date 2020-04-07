@@ -1,6 +1,6 @@
 name: 'Setup Java environment based on AdoptOpenJDK'
 description: 'Setup your runner with a JDK from AdoptOpenJDK'
-author: 'Jochen Schalanda'
+author: 'Clement Escoffier'
 inputs:
   release_type:
     description: 'Type of release, i. e. "releases" for stable builds or "nightly" for the most recent build.'
