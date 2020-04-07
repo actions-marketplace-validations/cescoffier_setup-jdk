@@ -127,7 +127,8 @@ async function downloadJavaBinary(
       heap_size,
       release
     );
-    const jdkFile = await tc.downloadTool(url);
+    core.info('Downloading JDK from ' + url);
+    const jdkFile = await retry(() => tc.downloadTool(url), 10, 1000, true);
     const compressedFileExtension = IS_WINDOWS ? '.zip' : '.tar.gz';
 
     const tempDir: string = path.join(
@@ -147,6 +148,41 @@ async function downloadJavaBinary(
   core.exportVariable('JAVA_HOME', toolPath);
   core.exportVariable(extendedJavaHome, toolPath);
   core.addPath(path.join(toolPath, 'bin'));
+}
+
+/**
+ * Retries the given function until it succeeds given a number of retries and an interval between them. They are set
+ * by default to retry 5 times with 1sec in between. There's also a flag to make the cooldown time exponential
+ * @author Daniel Iñigo <danielinigobanos@gmail.com>
+ * @param {Function} fn - Returns a promise
+ * @param {Number} retriesLeft - Number of retries. If -1 will keep retrying
+ * @param {Number} interval - Millis between retries. If exponential set to true will be doubled each retry
+ * @param {Boolean} exponential - Flag for exponential back-off mode
+ * @return {Promise<*>}
+ */
+async function retry(
+  fn: Function,
+  retriesLeft = 5,
+  interval = 1000,
+  exponential = false
+): Promise<string> {
+  try {
+    const val = await fn();
+    return val;
+  } catch (error) {
+    if (retriesLeft) {
+      core.warning('Download failed because of: ' + error);
+      core.warning('Retrying after a grace period of ' + interval + 'ms.');
+      core.info(retriesLeft + ' retries left');
+      await new Promise(r => setTimeout(r, interval));
+      return retry(
+        fn,
+        retriesLeft - 1,
+        exponential ? interval * 2 : interval,
+        exponential
+      );
+    } else throw new Error('Unable to download JDK, max retries reached');
+  }
 }
 
 function getCacheVersionSpec(
