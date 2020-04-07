@@ -1,4 +1,4 @@
-name: 'Setup Java environment based on AdoptOpenJDK'
+name: 'Setup Java using binaries from AdoptOpenJDK'
 description: 'Setup your runner with a JDK from AdoptOpenJDK'
 author: 'Clement Escoffier'
 inputs:
